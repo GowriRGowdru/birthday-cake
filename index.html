@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Birthday Surprise</title>
+  <style>
+    body {
+      text-align: center;
+      background: #ffe6f2;
+      font-family: Arial, sans-serif;
+    }
+    #cake {
+      width: 200px;
+      margin: 20px auto;
+      position: relative;
+    }
+    #flame {
+      width: 30px;
+      position: absolute;
+      top: -60px;
+      left: 85px;
+      transition: opacity 0.5s;
+    }
+    #message {
+      font-size: 24px;
+      margin-top: 20px;
+      display: none;
+      color: #d63384;
+      font-weight: bold;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎂 Blow the candle & cut the cake 🎂</h2>
+  <div id="cake">
+    <img id="flame" src="https://i.imgur.com/8bKQZ8T.png" alt="flame">
+    <img id="cakeImg" src="https://i.imgur.com/3YzQkzU.png" alt="cake">
+  </div>
+  <div id="message">🎉 Happy Birthday Puneeth! 🎉</div>
+  <canvas id="confetti"></canvas>
+
+  <script>
+    let cuts = 0;
+    const cakeImg = document.getElementById("cakeImg");
+    const flame = document.getElementById("flame");
+    const message = document.getElementById("message");
+
+    // 🎤 Microphone blow detection
+    async function startMic() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        source.connect(analyser);
+        const data = new Uint8Array(analyser.fftSize);
+
+        function detectBlow() {
+          analyser.getByteTimeDomainData(data);
+          let volume = data.reduce((a, b) => a + Math.abs(b - 128), 0) / data.length;
+          if (volume > 20) { // threshold
+            flame.style.opacity = 0; // extinguish flame
+          }
+          requestAnimationFrame(detectBlow);
+        }
+        detectBlow();
+      } catch (err) {
+        console.log("Mic access denied", err);
+      }
+    }
+
+    // 🍰 Cake cutting on tap
+    cakeImg.addEventListener("pointerdown", () => {
+      cuts++;
+      if (cuts === 1) cakeImg.src = "https://i.imgur.com/4zVfZkP.png"; // half cake
+      if (cuts === 2) cakeImg.src = "https://i.imgur.com/5kYfZkP.png"; // quarter cake
+      if (cuts >= 3) {
+        message.style.display = "block";
+        launchConfetti();
+      }
+    });
+
+    // 🎉 Confetti effect
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      let pieces = Array.from({length: 100}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 100 + 10,
+        color: `hsl(${Math.random()*360},100%,50%)`
+      }));
+      function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pieces.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+          p.y += 2;
+          if (p.y > canvas.height) p.y = 0;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // Start mic after user taps screen
+    document.body.addEventListener("click", startMic, { once: true });
+  </script>
+</body>
+</html>
