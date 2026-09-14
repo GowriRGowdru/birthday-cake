@@ -39,8 +39,10 @@
 <body>
   <h2>🎂 Blow the candle & cut the cake 🎂</h2>
   <div id="cake">
-    <img id="flame" src="https://i.imgur.com/8bKQZ8T.png" alt="flame">
-    <img id="cakeImg" src="https://i.imgur.com/3YzQkzU.png" alt="cake">
+    <!-- Candle flame -->
+    <img id="flame" src="https://cdn.corenexis.com/f/n7Hscj1up4Y.jpeg" alt="flame">
+    <!-- Whole cake (starting image) -->
+    <img id="cakeImg" src="https://cdn.corenexis.com/f/X1gOA1FkVDd.png" alt="cake">
   </div>
   <div id="message">🎉 Happy Birthday Puneeth! 🎉</div>
   <canvas id="confetti"></canvas>
@@ -78,9 +80,10 @@
     // 🍰 Cake cutting on tap
     cakeImg.addEventListener("pointerdown", () => {
       cuts++;
-      if (cuts === 1) cakeImg.src = "https://i.imgur.com/4zVfZkP.png"; // half cake
-      if (cuts === 2) cakeImg.src = "https://i.imgur.com/5kYfZkP.png"; // quarter cake
-      if (cuts >= 3) {
+      if (cuts === 1) cakeImg.src = "https://cdn.corenexis.com/f/BmQ5hSRetrT.png"; // half cake
+      if (cuts === 2) cakeImg.src = "https://cdn.corenexis.com/f/Hh5Q59rUfLM.png"; // quarter cake
+      if (cuts === 3) cakeImg.src = "https://cdn.corenexis.com/f/6M7PA1pLeg5.png"; // final cake
+      if (cuts >= 4) {
         message.style.display = "block";
         launchConfetti();
       }
